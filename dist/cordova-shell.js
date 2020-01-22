@@ -21,6 +21,15 @@
   }
   var shellCommands = {
       ls: function (path) {
+          // if it's a directory it sould end with a slash
+          // https://stackoverflow.com/questions/190852/how-can-i-get-file-extensions-with-javascript/1203361#1203361
+          var extension = path.substring(path.lastIndexOf('.') + 1, path.length) || path;
+          if (extension === path) {
+              // it's a directory
+              if (!path.endsWith('/')) {
+                  path += '/';
+              }
+          }
           return new Promise(function (resolve, reject) {
               window.resolveLocalFileSystemURL(path, function (entry) {
                   if (entry.isFile) {
@@ -37,11 +46,17 @@
       mkdir: function (path) {
           var split = path.split('/');
           var dir = split.pop();
-          var parent = split.join('/');
+          // case 1) cdvfile://localhost/persistent/updatable/
+          // case 2) cdvfile://localhost/persistent/updatable
+          // In case 1 last split member is '';
+          if (dir === '') {
+              dir = split.pop();
+          }
+          var parent = split.join('/') + '/';
           return new Promise(function (resolve, reject) {
-              return getEntry(parent).then(function (parentDirectory) {
+              getEntry(parent).then(function (parentDirectory) {
                   parentDirectory.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
-                      return directory;
+                      resolve(directory);
                   }, reject);
               });
           });
@@ -60,7 +75,7 @@
                           resolve();
                       }, reject);
                   }
-              });
+              }, reject);
           });
       },
       copy: function (source, dest) {
@@ -86,7 +101,6 @@
                   return response.blob();
               }
               else {
-                  window.console.error("???", response);
                   return Promise.reject(response);
               }
           }).then(function (blob) {
@@ -115,6 +129,70 @@
       },
       readText: function (url) {
           return new Promise(function (resolve, reject) {
+              getEntry(url).then(function (entry) {
+                  entry.file(function (file) {
+                      var reader = new FileReader();
+                      reader.onload = function () {
+                          resolve(reader.result);
+                      };
+                      reader.onerror = function (event) {
+                          reject(event);
+                      };
+                      reader.readAsText(file);
+                  }, reject);
+              }, reject);
+          });
+      },
+      readJSON: function (url) {
+          return new Promise(function (resolve, reject) {
+              getEntry(url).then(function (entry) {
+                  entry.file(function (file) {
+                      var reader = new FileReader();
+                      reader.onload = function () {
+                          resolve(JSON.parse(reader.result));
+                      };
+                      reader.onerror = function (event) {
+                          reject(event);
+                      };
+                      reader.readAsText(file);
+                  }, reject);
+              }, reject);
+          });
+      },
+      writeText: function (text, url) {
+          return new Promise(function (resolve, reject) {
+              var extract = extractFileName(url);
+              var fileName = extract.file;
+              var directory = extract.directory;
+              getEntry(directory).then(function (directory) {
+                  directory.getFile(fileName, { create: true, exclusive: false }, function (file) {
+                      var writer = file.createWriter(function (fileWriter) {
+                          fileWriter.onwriteend = function () {
+                              resolve(file);
+                          };
+                          fileWriter.onerror = Promise.reject;
+                          fileWriter.write(text);
+                      }, Promise.reject);
+                  }, Promise.reject);
+              });
+          });
+      },
+      writeJSON: function (obj, url) {
+          return new Promise(function (resolve, reject) {
+              var extract = extractFileName(url);
+              var fileName = extract.file;
+              var directory = extract.directory;
+              getEntry(directory).then(function (directory) {
+                  directory.getFile(fileName, { create: true, exclusive: false }, function (file) {
+                      var writer = file.createWriter(function (fileWriter) {
+                          fileWriter.onwriteend = function () {
+                              resolve(file);
+                          };
+                          fileWriter.onerror = Promise.reject;
+                          fileWriter.write(JSON.stringify(obj));
+                      }, Promise.reject);
+                  }, Promise.reject);
+              });
           });
       }
   };
@@ -206,8 +284,8 @@
               }
               return Promise.resolve(entries);
           }, function (err) {
-              window.console.error(err);
-              return Promise.reject(err);
+              log(err);
+              return Promise.resolve(null);
           });
       },
       remove: function (path) {
@@ -216,7 +294,7 @@
               return Promise.resolve();
           }, function (err) {
               log(err);
-              return Promise.reject(err);
+              return Promise.resolve(null);
           });
       },
       copy: function (source, dest) {
@@ -225,7 +303,7 @@
               return Promise.resolve(entry);
           }, function (err) {
               log(err);
-              return Promise.reject(err);
+              return Promise.resolve(null);
           });
       },
       download: function (source, dest) {
@@ -235,7 +313,7 @@
               return Promise.resolve(entry);
           }, function (err) {
               log(err);
-              return Promise.reject(err);
+              return Promise.resolve(null);
           });
       },
       exists: function (path) {
@@ -254,7 +332,45 @@
           }, function (err) {
               window.console.error('error creating directory');
               log(err);
-              return Promise.reject(err);
+              return Promise.resolve(null);
+          });
+      },
+      readText: function (path) {
+          return shellCommands.readText(path).then(function (text) {
+              window.console.log(text);
+              return Promise.resolve(text);
+          }, function (err) {
+              window.console.error(err);
+              return Promise.resolve(null);
+          });
+      },
+      readJSON: function (url) {
+          return shellCommands.readJSON(url).then(function (json) {
+              window.console.log(json);
+              return Promise.resolve(json);
+          }, function (err) {
+              window.console.error(err);
+              return Promise.resolve(null);
+          });
+      },
+      writeText: function (text, url) {
+          return shellCommands.writeText(text, url).then(function (file) {
+              window.console.log(file.name + ' wrote');
+              log(file);
+              return Promise.resolve(file);
+          }, function (err) {
+              window.console.error(err);
+              return Promise.resolve(null);
+          });
+      },
+      writeJSON: function (obj, url) {
+          return shellCommands.writeJSON(obj, url).then(function (file) {
+              window.console.log(file.name + ' wrote');
+              log(file);
+              return Promise.resolve(file);
+          }, function (err) {
+              window.console.error(err);
+              return Promise.resolve(null);
           });
       }
   };
@@ -313,6 +429,40 @@
       }
       shell.mkdir = mkdir;
       /**
+       * Read a file and return content as text.
+       * @param url
+       */
+      function readText(url) {
+          return shellCommands.readText(url);
+      }
+      shell.readText = readText;
+      /**
+       * Read a file and return content as object.
+       * @param url
+       */
+      function readJSON(url) {
+          return shellCommands.readJSON(url);
+      }
+      shell.readJSON = readJSON;
+      /**
+       *  Write text to a file.
+       * @param text
+       * @param url
+       */
+      function writeText(text, url) {
+          return shellCommands.writeText(text, url);
+      }
+      shell.writeText = writeText;
+      /**
+       * Write object to a file.
+       * @param obj
+       * @param url
+       */
+      function writeJSON(obj, url) {
+          return shellCommands.writeJSON(obj, url);
+      }
+      shell.writeJSON = writeJSON;
+      /**
        * Use shell commands in the devTools. Output results to the console.
        */
       var console;
@@ -322,12 +472,16 @@
            * For example shell.console.ls => window.ls so you can call ls directly in the chrome devTools
            */
           function mapToWindows() {
-              window['ls'] = shellCommands.ls;
-              window['remove'] = shellCommands.remove;
-              window['copy'] = shellCommands.copy;
-              window['download'] = shellCommands.download;
-              window['exists'] = shellCommands.exists;
-              window['mkdir'] = shellCommands.mkdir;
+              window['ls'] = shellConsole.ls;
+              window['remove'] = shellConsole.remove;
+              window['copy'] = shellConsole.copy;
+              window['download'] = shellConsole.download;
+              window['exists'] = shellConsole.exists;
+              window['mkdir'] = shellConsole.mkdir;
+              window['readText'] = shellConsole.readText;
+              window['readJSON'] = shellConsole.readJSON;
+              window['writeText'] = shellConsole.writeText;
+              window['writeJSON'] = shellConsole.writeJSON;
           }
           console.mapToWindows = mapToWindows;
           /**
@@ -377,9 +531,43 @@
            * @param path
            */
           function mkdir(path) {
-              return shellCommands.mkdir(path);
+              return shellConsole.mkdir(path);
           }
           console.mkdir = mkdir;
+          /**
+           * Read a file and return content as text.
+           * @param path
+           */
+          function readText(path) {
+              return shellConsole.readText(path);
+          }
+          console.readText = readText;
+          /**
+           * Read a file and return content as object.
+           * @param path
+           */
+          function readJSON(path) {
+              return shellConsole.readJSON(path);
+          }
+          console.readJSON = readJSON;
+          /**
+           * Write text to a file.
+           * @param text
+           * @param url
+           */
+          function writerText(text, url) {
+              return shellConsole.writeText(text, url);
+          }
+          console.writerText = writerText;
+          /**
+           * Write object to a file.
+           * @param text
+           * @param url
+           */
+          function writerJSON(text, url) {
+              return shellConsole.writeJSON(text, url);
+          }
+          console.writerJSON = writerJSON;
       })(console = shell.console || (shell.console = {}));
   })(shell || (shell = {}));
   var shell$1 = shell;

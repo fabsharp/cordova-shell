@@ -2,13 +2,21 @@ Cordova shell is a javascript wrapper around the [Apache Cordova Plugin File](ht
 
 ```js
 ls('cdvfile://localhost/persistent/');
+
 mkdir('cdvfile://localhost/persistent/data/');
+
 writeText('hello world', 'cdvfile://localhost/persistent/data/hello.txt');
+
 copy('cdvfile://localhost/persistent/data/hello.txt', cordova.file.dataDirectory);
+
 ls(cordova.file.dataDirectory);
+
 download('https://www.w3.org/TR/PNG/iso_8859-1.txt', 'cdvfile://localhost/persistent/data/iso.txt');
+
 readText('cdvfile://localhost/persistent/data/iso.txt')
+
 remove('cdvfile://localhost/persistent/data/iso.txt');
+
 remove('cdvfile://localhost/persistent/data/');
 ```
 
@@ -40,7 +48,7 @@ Cordova shell give you access to the device filesystem in devTools :
 
 Note the first instruction :
 ```js
-    shell.console.mapToWindows();
+shell.console.mapToWindows();
 ```
 By default all the console commands are in the _shell.console_ namespace :
 ```js
