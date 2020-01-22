@@ -36,7 +36,7 @@ In case you miss it your can [inspect your cordova app with chrome devtools](htt
 
 Cordova shell give you access to the device filesystem in devTools :
 
-![Image of Yaktocat](./doc/capture1.png)
+![Image of Yaktocat](doc/capture1.png)
 
 Note the first instruction :
 ```js
