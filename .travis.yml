@@ -1,14 +1,15 @@
 language: node_js
 node_js:
-  - 8.11.3
+  - node
 script:
   - node npm-publish.js
   - cd dist.npm
   - ls
 deploy:
-  - provider: npm
-    email: "fabien.levavasseur@gmail.com"
-    api_key: $NPM_AUTH_TOKEN
-    skip_cleanup: true
-    on:
-      tags: true
+  edge: true
+  provider: npm
+  email: "fabien.levavasseur@gmail.com"
+  api_key: $NPM_AUTH_TOKEN
+  skip_cleanup: true
+  on:
+    tags: true
