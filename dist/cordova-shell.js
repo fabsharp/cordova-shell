@@ -4,7 +4,7 @@
   (global = global || self, global.shell = factory());
 }(this, (function () { 'use strict';
 
-  console.log("cordova-shell.js v1.0.0")
+  console.log("cordova-shell.js v0.9.1")
 
   function extractFileName(url) {
       var split = url.split('/');
