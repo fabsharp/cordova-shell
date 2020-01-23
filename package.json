@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c rollup.dev.js --watch"
+    "dev": "rollup -c rollup.dev.js --watch",
+    "version": "rollup -c && git add package.json && git add -A dist",
+    "postversion": "git push origin && git push origin --tags"
   },
   "keywords": [],
   "author": "Fabien Le Vavasseur",
