@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 8.11.3
 script:
-  - node ./tools/npm-publish/prebuildpackage.js
+  - node npm-publish.js
   - cd dist.npm
   - ls
 deploy:
