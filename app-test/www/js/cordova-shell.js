@@ -78,7 +78,9 @@
               }, reject);
           });
       },
-      copy: function (source, dest) {
+      copy: function (source, dest, progressCallback) {
+          var _this = this;
+          // TODO : progressCallback
           return new Promise(function (resolve, reject) {
               window.resolveLocalFileSystemURL(source, function (entry) {
                   if (entry.isFile) {
@@ -89,6 +91,20 @@
                           var _parent = parentDirectory;
                           entry.copyTo(_parent, newName_1, function (item) {
                               resolve(item);
+                          }, reject);
+                      }, reject);
+                  }
+                  else {
+                      // entry is a directory
+                      _this.mkdir(dest).then(function (destDirectory) {
+                          _this.ls(source).then(function (entries) {
+                              var promises = [];
+                              entries.forEach(function (entry) {
+                                  promises.push(_this.copy(source + '/' + entry.name, dest + '/' + entry.name));
+                              });
+                              Promise.all(promises).then(function () {
+                                  resolve(destDirectory);
+                              });
                           }, reject);
                       }, reject);
                   }
@@ -144,6 +160,7 @@
           });
       },
       readJSON: function (url) {
+          // TODO : useReadText
           return new Promise(function (resolve, reject) {
               getEntry(url).then(function (entry) {
                   entry.file(function (file) {
@@ -178,6 +195,7 @@
           });
       },
       writeJSON: function (obj, url) {
+          // TODO : use writeText
           return new Promise(function (resolve, reject) {
               var extract = extractFileName(url);
               var fileName = extract.file;

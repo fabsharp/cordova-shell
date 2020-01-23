@@ -1,6 +1,3 @@
-import shell from "./index";
-import readText = shell.console.readText;
-
 function extractFileName(url : string) {
   let split = url.split('/');
   let fileName = split.pop();
@@ -76,7 +73,8 @@ export default {
       }, reject);
     })
   },
-  copy(source : string, dest : string) : Promise<Entry> {
+  copy(source : string, dest : string, progressCallback? : (percent) => void ) : Promise<Entry> {
+    // TODO : progressCallback
     return new Promise((resolve, reject) => {
       window.resolveLocalFileSystemURL(source, entry => {
         if(entry.isFile) {
@@ -89,6 +87,20 @@ export default {
               resolve(item);
             }, reject);
           }, reject);
+        }
+        else {
+          // entry is a directory
+          this.mkdir(dest).then((destDirectory) => {
+            this.ls(source).then((entries) => {
+              let promises = [];
+              entries.forEach((entry) => {
+                promises.push(this.copy(source + '/' + entry.name, dest + '/' + entry.name));
+              });
+              Promise.all(promises).then(() => {
+                resolve(destDirectory);
+              });
+            }, reject);
+          }, reject)
         }
       }, reject);
     });
@@ -142,6 +154,7 @@ export default {
     });
   },
   readJSON(url : string) : Promise<any> {
+    // TODO : useReadText
     return new Promise((resolve, reject) => {
       getEntry(url).then((entry : FileEntry) => {
         entry.file((file : File) => {
@@ -176,6 +189,7 @@ export default {
     });
   },
   writeJSON(obj : any, url : string) : Promise<FileEntry> {
+    // TODO : use writeText
     return new Promise((resolve, reject) => {
       let extract = extractFileName(url);
       let fileName = extract.file;
