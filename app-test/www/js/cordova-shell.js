@@ -4,7 +4,7 @@
   (global = global || self, global.shell = factory());
 }(this, (function () { 'use strict';
 
-  console.log("cordova-shell.js dev version")
+  console.log("cordova-shell.js v0.9.2")
 
   function extractFileName(url) {
       var split = url.split('/');
@@ -44,6 +44,7 @@
           });
       },
       mkdir: function (path) {
+          var _this = this;
           var split = path.split('/');
           var dir = split.pop();
           // case 1) cdvfile://localhost/persistent/updatable/
@@ -57,6 +58,12 @@
               getEntry(parent).then(function (parentDirectory) {
                   parentDirectory.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
                       resolve(directory);
+                  }, reject);
+              }, function () {
+                  return _this.mkdir(parent).then(function (parentDirectory) {
+                      parentDirectory.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
+                          resolve(directory);
+                      }, reject);
                   }, reject);
               });
           });
@@ -112,6 +119,7 @@
           });
       },
       download: function (url, dest) {
+          var _this = this;
           return fetch(url).then(function (response) {
               if (response.ok) {
                   return response.blob();
@@ -124,8 +132,8 @@
               var newName = extract.file;
               var directory = extract.directory;
               return new Promise(function (resolve, reject) {
-                  window.resolveLocalFileSystemURL(directory, function (parentDirectory) {
-                      parentDirectory.getFile(newName, { create: true, exclusive: false }, function (entry) {
+                  _this.mkdir(directory).then(function (directoryEntry) {
+                      directoryEntry.getFile(newName, { create: true, exclusive: false }, function (entry) {
                           entry.createWriter(function (writer) {
                               writer.onwriteend = function () {
                                   resolve(entry);
@@ -134,14 +142,21 @@
                                   reject(e);
                               };
                               writer.write(blob);
-                          }, reject);
-                      }, reject);
-                  }, reject);
+                          });
+                      });
+                  });
               });
           }, function (err) { return Promise.reject(err); });
       },
       exists: function (url) {
-          return getEntry(url);
+          return new Promise(function (resolve, reject) {
+              try {
+                  window.resolveLocalFileSystemURL(url, function (entry) { resolve(true); }, function (err) { return resolve(false); });
+              }
+              catch (_a) {
+                  alert('!! carched');
+              }
+          });
       },
       readText: function (url) {
           return new Promise(function (resolve, reject) {

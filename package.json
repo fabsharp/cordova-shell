@@ -6,6 +6,9 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c rollup.dev.js --watch",
+    "livereload": "cd app-test && cordova-livereload",
+    "server-test": "node server-test",
+    "watch": "concurrently \"npm run dev\" \"npm run livereload\" ",
     "version": "rollup -c && git add package.json && git add -A dist",
     "postversion": "git push origin && git push origin --tags"
   },
@@ -15,6 +18,7 @@
   "devDependencies": {
     "@types/cordova": "0.0.34",
     "@types/cordova-plugin-file": "^4.3.2",
+    "concurrently": "^5.1.0",
     "mkdirp": "^0.5.1",
     "rollup-plugin-copy": "^3.2.1",
     "rollup-plugin-typescript2": "^0.25.3"

@@ -2,7 +2,7 @@
 import {default as shellCommands} from './shellCommands';
 import {default as shellConsole} from './shellConsole';
 
-namespace shell {
+module shell {
   /**
    * List information about the FILEs
    * @param path
@@ -41,7 +41,7 @@ namespace shell {
    * Check if a file or a directory exists
    * @param url
    */
-  export function exists(url: string): Promise<Entry> {
+  export function exists(url: string): Promise<boolean> {
     return shellCommands.exists(url);
   }
 

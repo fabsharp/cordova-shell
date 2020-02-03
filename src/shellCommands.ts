@@ -52,7 +52,13 @@ export default {
       getEntry(parent).then((parentDirectory : DirectoryEntry) => {
           parentDirectory.getDirectory(dir, { create : true, exclusive : false}, (directory : DirectoryEntry) => {
             resolve(directory);
-          }, reject)
+          }, reject);
+      }, () => {
+        return this.mkdir(parent).then(function(parentDirectory) {
+          parentDirectory.getDirectory(dir, {create: true, exclusive: false}, (directory: DirectoryEntry) => {
+            resolve(directory);
+          }, reject);
+        }, reject);
       })
     })
   },
@@ -118,8 +124,8 @@ export default {
       let newName = extract.file;
       let directory = extract.directory;
       return new Promise((resolve, reject) => {
-        window.resolveLocalFileSystemURL(directory, (parentDirectory : DirectoryEntry) => {
-          parentDirectory.getFile(newName, {create : true, exclusive : false}, (entry : FileEntry) => {
+        this.mkdir(directory).then((directoryEntry) => {
+          directoryEntry.getFile(newName, {create : true, exclusive : false}, (entry : FileEntry) => {
             entry.createWriter((writer : FileWriter) => {
               writer.onwriteend = function() {
                 resolve(entry);
@@ -128,14 +134,22 @@ export default {
                 reject(e);
               };
               writer.write(blob);
-            }, reject);
-          }, reject)
-        }, reject)
+            });
+          })
+        })
       });
     }, (err) => Promise.reject(err))
   },
-  exists(url : string) : Promise<Entry> {
-    return getEntry(url);
+  exists(url : string) : Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      try {
+        window.resolveLocalFileSystemURL(url, entry => {resolve(true)}, err => resolve(false));
+      }
+      catch {
+        alert('!! carched');
+      }
+
+    });
   },
   readText(url : string) : Promise<string> {
     return new Promise((resolve, reject) => {
