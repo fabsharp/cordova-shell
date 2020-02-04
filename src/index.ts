@@ -1,195 +1,64 @@
 /// <reference path="../node_modules/cordova-plugin-file/types/index.d.ts" />
-import {default as shellCommands} from './shellCommands';
-import {default as shellConsole} from './shellConsole';
-
-module shell {
+import * as _shell from './shell/index';
+export module shell {
   /**
    * List information about the FILEs
    * @param path
    */
-  export function ls(path: string) : Promise<Entry | Entry[]> {
-    return shellCommands.ls(path);
-  }
-
+  export const ls = _shell.ls;
+  /**
+   * Create a directory
+   * @param path
+   */
+  export const mkdir = _shell.mkdir;
   /**
    * Remove a file or a directory
    * @param path
    */
-  export function remove(path : string) : Promise<void> {
-    return shellCommands.remove(path);
-  }
-
+  export const remove = _shell.remove;
   /**
    * Copy a source to a dest
    * @param source
    * @param dest
    */
-  export function copy(source : string, dest : string) : Promise<Entry> {
-    return shellCommands.copy(source, dest);
-  }
-
+  export const copy = _shell.copy;
   /**
    * Download a remote file to a local folder
    * @param url
    * @param dest
    */
-  export function download(url: string, dest: string): Promise<FileEntry> {
-    return shellCommands.download(url, dest);
-  }
-
+  export const download = _shell.download;
   /**
    * Check if a file or a directory exists
    * @param url
    */
-  export function exists(url: string): Promise<boolean> {
-    return shellCommands.exists(url);
-  }
-
-  /**
-   * Create a directory (parent must exists)
-   * @param path
-   */
-  export function mkdir(path : string) : Promise<DirectoryEntry> {
-    return shellCommands.mkdir(path);
-  }
-
+  export const exists = _shell.exists;
   /**
    * Read a file and return content as text.
    * @param url
    */
-  export function readText(url : string) : Promise<string> {
-    return shellCommands.readText(url);
-  }
-
+  export const readText = _shell.readText;
   /**
    * Read a file and return content as object.
    * @param url
    */
-  export function  readJSON(url : string) : Promise<any> {
-    return shellCommands.readJSON(url);
-  }
-
+  export const readJSON = _shell.readJSON;
   /**
-   *  Write text to a file.
+   * Write text to a file.
    * @param text
    * @param url
    */
-  export function  writeText(text : string, url : string) : Promise<FileEntry> {
-    return shellCommands.writeText(text, url);
-  }
-
+  export const writeText = _shell.writeText;
   /**
    * Write object to a file.
    * @param obj
    * @param url
    */
-  export function writeJSON(obj : any, url : string) : Promise<FileEntry> {
-    return shellCommands.writeJSON(obj, url);
-  }
+  export const writeJSON = _shell.writeJSON;
+
   /**
-   * Use shell commands in the devTools. Output results to the console.
+   * Show details in console.log
+   * param value (default : false)
    */
-  export namespace console {
-    /**
-     * Map all shell.console commands to the window global object.
-     * For example shell.console.ls => window.ls so you can call ls directly in the chrome devTools
-     */
-    export function mapToWindows() {
-      window['ls'] = shellConsole.ls;
-      window['remove'] = shellConsole.remove;
-      window['copy'] = shellConsole.copy;
-      window['download'] = shellConsole.download;
-      window['exists'] = shellConsole.exists;
-      window['mkdir'] = shellConsole.mkdir;
-      window['readText'] = shellConsole.readText;
-      window['readJSON'] = shellConsole.readJSON;
-      window['writeText'] = shellConsole.writeText;
-      window['writeJSON'] = shellConsole.writeJSON;
-    }
-    /**
-     * List information about the FILEs
-     * @param path
-     */
-    export function ls(path: string) : Promise<Entry | Entry[] | null> {
-      return shellConsole.ls(path);
-    }
-
-    /**
-     * Remove a file or a directory
-     * @param path
-     */
-    export function remove(path : string) : Promise<void> {
-      return shellConsole.remove(path);
-    }
-
-    /**
-     * Copy a source to a dest
-     * @param source
-     * @param dest
-     */
-    export function copy(source : string, dest : string) : Promise<Entry | null> {
-      return shellConsole.copy(source, dest);
-    }
-
-    /**
-     * Download a remote file to a local folder
-     * @param url
-     * @param dest
-     */
-    export function download(url: string, dest: string): Promise<FileEntry | null> {
-      return shellConsole.download(url, dest);
-    }
-
-    /**
-     * Check if a file or a directory exists
-     * @param url
-     */
-    export function exists(url: string): Promise<Entry | null > {
-      return shellConsole.exists(url);
-    }
-
-    /**
-     * Create a directory (parent must exists)
-     * @param path
-     */
-    export function mkdir(path : string) : Promise<DirectoryEntry | null> {
-      return shellConsole.mkdir(path);
-    }
-
-    /**
-     * Read a file and return content as text.
-     * @param path
-     */
-    export function readText(path : string) : Promise<string | null> {
-      return shellConsole.readText(path);
-    }
-
-    /**
-     * Read a file and return content as object.
-     * @param path
-     */
-    export function readJSON(path : string) : Promise<any> {
-      return shellConsole.readJSON(path);
-    }
-
-    /**
-     * Write text to a file.
-     * @param text
-     * @param url
-     */
-    export function writerText(text : string, url : string) : Promise<FileEntry | null> {
-      return shellConsole.writeText(text, url);
-    }
-
-    /**
-     * Write object to a file.
-     * @param text
-     * @param url
-     */
-    export function writerJSON(text : string, url : string) : Promise<FileEntry | null> {
-      return shellConsole.writeJSON(text, url);
-    }
-  }
-};
-
-export default shell;
+  export const consoleLog = _shell.consoleLog;
+}
