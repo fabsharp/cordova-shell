@@ -2,8 +2,6 @@
   "compilerOptions": {
     "target": "es5",
     "module": "es2015",
-    "lib": ["es2015", "es2015.promise", "dom"],
-    "declaration": true,
-    "declarationDir": "dist"
+    "lib": ["es2015", "es2015.promise", "dom"]
   }
 }

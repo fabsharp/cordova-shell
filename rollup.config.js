@@ -1,19 +1,17 @@
 import typescript from 'rollup-plugin-typescript2';
+import copy from 'rollup-plugin-copy';
 import pkg from './package.json'
 export default [{
     input: 'src/index.ts',
     output: {
         file: 'dist/index.js',
         format: 'es',
-        name: 'shell',
         sourcemap : true,
         intro : 'console.log("cordova-shell.js v' + pkg.version + '")'
     },
     plugins: [
-        typescript({
-            clean : true,
-            useTsconfigDeclarationDir: true
-        })
+        typescript(),
+
     ]
 }, {
     input : 'src/shell/index.ts',
@@ -25,9 +23,16 @@ export default [{
         intro : 'console.log("cordova-shell.js v' + pkg.version + '")',
     },
     plugins: [
-        typescript({
-            clean : true,
-            useTsconfigDeclarationDir: true
+        typescript(
+            {
+                objectHashIgnoreUnknownHack: true
+            }
+        ),
+        copy({
+            objectHashIgnoreUnknownHack : true,
+            targets : [
+                {src : './src/index.d.ts', dest : './dist'}
+            ]
         })
     ]
 }];
