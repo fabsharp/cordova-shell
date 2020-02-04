@@ -1,4 +1,4 @@
-console.log("cordova-shell.js v0.9.4")
+console.log("cordova-shell.js v0.9.5")
 
 var _consoleLog = false;
 var settings = {
