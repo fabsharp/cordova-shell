@@ -56,7 +56,7 @@ export declare module shell {
     const writeJSON: (data: any, url: string) => Promise<FileEntry>;
     /**
      * Show details in console.log
-     * default : false
+     * param value (default : false)
      */
-    const consoleLog: boolean;
+    const consoleLog: (value: boolean) => void;
 }

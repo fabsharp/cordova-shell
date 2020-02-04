@@ -1,4 +1,4 @@
-console.log("cordova-shell.js v0.9.3")
+console.log("cordova-shell.js v0.9.4")
 
 var _consoleLog = false;
 var settings = {
@@ -333,6 +333,10 @@ var writeJSON = function (data, url) {
     return writeText(JSON.stringify(data), url);
 };
 
+var consoleLog = function (value) {
+    settings.consoleLog = value;
+};
+
 /// <reference path="../node_modules/cordova-plugin-file/types/index.d.ts" />
 var shell;
 (function (shell) {
@@ -392,9 +396,9 @@ var shell;
     shell.writeJSON = writeJSON;
     /**
      * Show details in console.log
-     * default : false
+     * param value (default : false)
      */
-    shell.consoleLog = settings.consoleLog;
+    shell.consoleLog = consoleLog;
 })(shell || (shell = {}));
 
 export { shell };

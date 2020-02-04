@@ -4,7 +4,7 @@
   (global = global || self, factory(global.shell = {}));
 }(this, (function (exports) { 'use strict';
 
-  console.log("cordova-shell.js v0.9.3")
+  console.log("cordova-shell.js v0.9.4")
 
   var _consoleLog = false;
   var settings = {
@@ -339,6 +339,11 @@
       return writeText(JSON.stringify(data), url);
   };
 
+  var consoleLog = function (value) {
+      settings.consoleLog = value;
+  };
+
+  exports.consoleLog = consoleLog;
   exports.copy = copy;
   exports.download = download;
   exports.exists = exists;
@@ -347,7 +352,6 @@
   exports.readJSON = readJSON;
   exports.readText = readText;
   exports.remove = remove;
-  exports.settings = settings;
   exports.writeJSON = writeJSON;
   exports.writeText = writeText;
 
