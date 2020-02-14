@@ -2,9 +2,10 @@ language: node_js
 node_js:
   - node
 script:
-  - node npm-publish.js
-  - cd dist.npm
-  - ls
+  - if [ $TRAVIS_PULL_REQUEST == "false" ]; then
+      node npm-publish.js;
+      cd dist.npm;
+    fi
 deploy:
   edge: true
   provider: npm
