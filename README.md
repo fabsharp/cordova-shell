@@ -22,7 +22,9 @@ shell.remove('cdvfile://localhost/persistent/data/iso.txt');
 
 shell.remove('cdvfile://localhost/persistent/data/');
 
-shell.fileTree('cdvfile://localhost/persistent/');
+shell.fileTree('cdvfile://localhost/persistent/'); //return relative paths
+
+shell.fileTree('cdvfile://localhost/persistent/', false); //return absolute paths
 ```
 
 

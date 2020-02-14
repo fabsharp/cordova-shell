@@ -684,25 +684,26 @@ function isObjectLike(value) {
   return !!value && typeof value == 'object';
 }
 
-var D__src_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
+var D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
 
 var _fileTree = function (path) {
     var promises = [];
     return ls(path).then(function (entries) {
         entries.forEach(function (entry) {
             if (entry.isFile) {
-                promises.push(entry.fullPath);
+                promises.push(path + entry.name);
             }
             else {
                 promises.push(_fileTree(path + entry.name + '/'));
             }
         });
         return Promise.all(promises).then(function (result) {
-            return D__src_cordovaShell_node_modules_lodash_flattendeep(result);
+            return D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep(result);
         });
     });
 };
-var fileTree = function (path) {
+var fileTree = function (path, relative) {
+    if (relative === void 0) { relative = true; }
     var consoleLog;
     if (settings.consoleLog === true) {
         settings.consoleLog = false;
@@ -712,6 +713,11 @@ var fileTree = function (path) {
         path += '/';
     }
     return _fileTree(path).then(function (result) {
+        if (relative) {
+            result = result.map(function (fileFullPath) {
+                return fileFullPath.split(path)[1];
+            });
+        }
         if (consoleLog) {
             console.log(result);
             settings.consoleLog = consoleLog;
