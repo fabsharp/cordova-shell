@@ -21,6 +21,8 @@ shell.readText('cdvfile://localhost/persistent/data/iso.txt')
 shell.remove('cdvfile://localhost/persistent/data/iso.txt');
 
 shell.remove('cdvfile://localhost/persistent/data/');
+
+shell.fileTree('cdvfile://localhost/persistent/');
 ```
 
 
