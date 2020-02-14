@@ -1,4 +1,4 @@
-console.log("cordova-shell.js v0.9.6")
+console.log("cordova-shell.js v0.9.7")
 
 var _consoleLog = false;
 var settings = {
@@ -684,7 +684,7 @@ function isObjectLike(value) {
   return !!value && typeof value == 'object';
 }
 
-var D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
+var D__src_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
 
 var _fileTree = function (path) {
     var promises = [];
@@ -698,7 +698,7 @@ var _fileTree = function (path) {
             }
         });
         return Promise.all(promises).then(function (result) {
-            return D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep(result);
+            return D__src_cordovaShell_node_modules_lodash_flattendeep(result);
         });
     });
 };
