@@ -57,6 +57,11 @@ export module shell {
   export const writeJSON = _shell.writeJSON;
 
   /**
+   * Get all files and folder
+   * @returns an Array of string
+   */
+  export const fileTree = _shell.fileTree;
+  /**
    * Show details in console.log
    * param value (default : false)
    */

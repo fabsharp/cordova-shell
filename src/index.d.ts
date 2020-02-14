@@ -1,4 +1,5 @@
 /// <reference types="cordova-plugin-file" />
+
 declare module shell {
   /**
    * List information about the FILEs
@@ -54,6 +55,11 @@ declare module shell {
    * @param url
    */
   const writeJSON: (data: any, url: string) => Promise<FileEntry>;
+  /**
+   * Get all files and folder
+   * @returns an Array of string
+   */
+   const fileTree: (path : string) => Promise<Array<string>>;
   /**
    * Show details in console.log
    * param value (default : false)

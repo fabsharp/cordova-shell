@@ -17,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
     "@types/cordova": "0.0.34",
     "@types/cordova-plugin-file": "^4.3.2",
     "concurrently": "^5.1.0",
@@ -25,6 +26,7 @@
     "rollup-plugin-typescript2": "^0.25.3"
   },
   "dependencies": {
+    "lodash.flattendeep": "^4.4.0",
     "typescript": "^3.7.5"
   }
 }

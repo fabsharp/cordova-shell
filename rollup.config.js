@@ -1,6 +1,8 @@
 import typescript from 'rollup-plugin-typescript2';
 import copy from 'rollup-plugin-copy';
 import pkg from './package.json'
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 export default [{
     input: 'src/index.ts',
     output: {
@@ -11,7 +13,8 @@ export default [{
     },
     plugins: [
         typescript(),
-
+        resolve({browser:true}),
+        commonjs(),
     ]
 }, {
     input : 'src/shell/index.ts',
@@ -28,6 +31,8 @@ export default [{
                 objectHashIgnoreUnknownHack: true
             }
         ),
+        resolve({browser:true}),
+        commonjs(),
         copy({
             objectHashIgnoreUnknownHack : true,
             targets : [

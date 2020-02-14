@@ -9,6 +9,7 @@ export {readText} from './readText';
 export {readJSON} from './readJSON';
 export {writeText} from './writeText';
 export {writeJSON} from './writeJSON';
+export {fileTree} from './fileTree';
 export const consoleLog = (value : boolean) => {
   settings.consoleLog = value;
 };
