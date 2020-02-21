@@ -6,9 +6,13 @@ pkg.scripts = {};
 pkg.devDependencies = {};
 pkg.dependencies = {
     "@types/cordova": "0.0.34",
-    "@types/cordova-plugin-file": "^4.3.2"
+    "@types/cordova-plugin-file": "^4.3.2",
+    "node-fetch": "^2.6.0",
+    "node-fs-extra": "^0.8.2",
+    "mkdirp": "^0.5.1",
+    "@types/node": "^13.7.1"
 };
-pkg.main = 'index.js';
+pkg.main = 'node-shell.js';
 pkg.types = 'index.d.ts';
 
 mkdirp('dist.npm');

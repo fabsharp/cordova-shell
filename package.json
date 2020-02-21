@@ -12,6 +12,14 @@
     "version": "rollup -c && git add package.json && git add -A dist",
     "postversion": "git push origin && git push origin --tags"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabsharp/cordova-shell.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fabsharp/cordova-shell/issues"
+  },
+  "homepage": "https://github.com/fabsharp/cordova-shell",
   "keywords": [],
   "author": "Fabien Le Vavasseur",
   "license": "ISC",
