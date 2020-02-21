@@ -4,6 +4,8 @@
   (global = global || self, factory(global.shell = {}));
 }(this, (function (exports) { 'use strict';
 
+  console.log("cordova-shell.js v0.9.9")
+
   var _consoleLog = false;
   var settings = {
       get consoleLog() {
