@@ -1,5 +1,5 @@
 import {ls} from './ls';
-import {settings} from "./settings";
+import {settings} from "../settings";
 import {default as _} from 'lodash.flattendeep';
 
 const _fileTree = (path : string) : Promise<Array<string>> => {

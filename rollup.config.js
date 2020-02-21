@@ -4,40 +4,29 @@ import pkg from './package.json'
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 export default [{
-    input: 'src/index.ts',
-    output: {
-        file: 'dist/index.js',
-        format: 'es',
-        sourcemap : true,
-        intro : 'console.log("cordova-shell.js v' + pkg.version + '")'
-    },
+    input: 'src/cordova/index.ts',
+    output: [{
+        file: 'dist/cordova-shell.js',
+        format: 'umd',
+        sourcemap: true,
+        name : 'shell',
+    }],
     plugins: [
         typescript(),
         resolve({browser:true}),
-        commonjs(),
+        commonjs()
     ]
 }, {
-    input : 'src/shell/index.ts',
-    output : {
-        file: 'dist/cordova-shell.js',
-        format: 'umd',
-        name: 'shell',
-        sourcemap : true,
-        intro : 'console.log("cordova-shell.js v' + pkg.version + '")',
-    },
+    input: 'src/node/index.ts',
+    output: [{
+        file: 'dist/node-shell.js',
+        format: 'commonjs',
+        sourcemap: true,
+        name : 'shell',
+    }],
     plugins: [
-        typescript(
-            {
-                objectHashIgnoreUnknownHack: true
-            }
-        ),
-        resolve({browser:true}),
-        commonjs(),
-        copy({
-            objectHashIgnoreUnknownHack : true,
-            targets : [
-                {src : './src/index.d.ts', dest : './dist'}
-            ]
-        })
+        typescript(),
+        resolve(),
+        commonjs()
     ]
 }];

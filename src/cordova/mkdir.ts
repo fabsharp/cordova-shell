@@ -1,7 +1,8 @@
 import {getEntry} from "./utils/getEntry";
 import * as log from "./log/index";
+import {ShellEntry} from "../ShellEntry";
 
-function _mkdir (path : string) : Promise<DirectoryEntry> {
+function _mkdir (path : string) : Promise<ShellEntry> {
   let split = path.split('/');
   let dir = split.pop();
   // case 1) cdvfile://localhost/persistent/updatable/
@@ -14,17 +15,21 @@ function _mkdir (path : string) : Promise<DirectoryEntry> {
   return new Promise((resolve, reject) => {
     getEntry(parent).then((parentDirectory : DirectoryEntry) => {
       parentDirectory.getDirectory(dir, { create : true, exclusive : false}, (directory : DirectoryEntry) => {
-        log.info('directory created.')
-        resolve(directory);
+        log.info('directory created.');
+        ShellEntry.fromCordova(directory).then(shellEntry => {
+          resolve(shellEntry);
+        });
       }, (err) => {
         log.fileError(err);
         reject(err);
       });
     }, () => {
       return _mkdir(parent).then(function(parentDirectory) {
-        parentDirectory.getDirectory(dir, {create: true, exclusive: false}, (directory: DirectoryEntry) => {
-          log.info('directory created.')
-          resolve(directory);
+        parentDirectory.nativeEntry.getDirectory(dir, {create: true, exclusive: false}, (directory: DirectoryEntry) => {
+          log.info('directory created.');
+          ShellEntry.fromCordova(directory).then(shellEntry => {
+            resolve(shellEntry);
+          });
         }, (err) => {
           log.fileError(err);
           reject(err);

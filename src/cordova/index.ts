@@ -1,4 +1,4 @@
-import {settings} from './settings';
+import {settings} from '../settings';
 export {ls} from './ls';
 export {mkdir} from './mkdir';
 export {remove} from './remove';

@@ -2,8 +2,9 @@ import * as log from "./log/index";
 import {extractFileName} from "./utils/extractFileName";
 import {mkdir} from "./mkdir";
 import {ls} from "./ls";
+import {ShellEntry} from "../ShellEntry";
 
-function _copy(source : string, dest : string, progressCallback? : (percent) => void ) : Promise<Entry> {
+function _copy(source : string, dest : string, progressCallback? : (percent) => void ) : Promise<ShellEntry> {
   // TODO : progressCallback
   return new Promise((resolve, reject) => {
     window.resolveLocalFileSystemURL(source, entry => {
@@ -15,7 +16,10 @@ function _copy(source : string, dest : string, progressCallback? : (percent) => 
           let _parent = <DirectoryEntry> parentDirectory;
           entry.copyTo(_parent, newName, item => {
             log.info(entry.name + ' copied.');
-            resolve(item);
+            ShellEntry.fromCordova(item).then(shellEntry => {
+              resolve(shellEntry);
+            })
+
           }, (err) => {
             log.fileError(err);
             reject(err);

@@ -1,8 +1,9 @@
 import {getEntry} from "./utils/getEntry";
 import {extractFileName} from "./utils/extractFileName";
 import * as log from './log/index';
+import {ShellEntry} from "../ShellEntry";
 
-export const writeText = (text : string, url : string) : Promise<FileEntry> => {
+export const writeText = (text : string, url : string) : Promise<ShellEntry> => {
   return new Promise((resolve, reject) => {
     let extract = extractFileName(url);
     let fileName = extract.file;
@@ -11,8 +12,10 @@ export const writeText = (text : string, url : string) : Promise<FileEntry> => {
       directory.getFile(fileName, {create : true, exclusive : false}, (file) => {
         let writer = file.createWriter(fileWriter => {
           fileWriter.onwriteend = function() {
-            log.info('file wrote.')
-            resolve(file);
+            log.info('file wrote.');
+            ShellEntry.fromCordova(file).then(shellEntry => {
+              resolve(shellEntry);
+            });
           };
           fileWriter.onerror = Promise.reject;
           fileWriter.write(text);

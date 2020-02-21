@@ -49,12 +49,12 @@ document.addEventListener('deviceready', function() {
 
         it('download', function(done) {
             this.timeout(5000);
-           shell.download('http://192.168.56.1:666/index.html', 'cdvfile://localhost/persistent/test/downloaded/index.html').then(function(entry) {
+            shell.download('http://192.168.56.1:666/index.html', 'cdvfile://localhost/persistent/test/downloaded/index.html').then(function(entry) {
                 shell.readText('cdvfile://localhost/persistent/test/downloaded/index.html').then(function(html) {
                     expect(html === '<h1>Fake Web Server Home</h1>').to.be.true;
                     done();
                 })
-           })
+            })
         });
         after(function() {
 

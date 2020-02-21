@@ -4,8 +4,6 @@
   (global = global || self, factory(global.shell = {}));
 }(this, (function (exports) { 'use strict';
 
-  console.log("cordova-shell.js v0.9.7")
-
   var _consoleLog = false;
   var settings = {
       get consoleLog() {
@@ -85,7 +83,37 @@
       }
   };
 
-  var ls = function (path, consoleLog) {
+  var ShellEntry = /** @class */ (function () {
+      function ShellEntry(name, path, size, modificationTime, isFile, nativeEntry) {
+          this.name = name;
+          this.path = path;
+          this.size = size;
+          this.modificationTime = modificationTime;
+          this.isFile = isFile;
+          this.nativeEntry = nativeEntry;
+          this.isDirectory = !this.isFile;
+      }
+      ShellEntry.fromCordova = function (entry) {
+          return getMetaData$1(entry).then(function (meta) {
+              var name = entry.name ? entry.name : entry.filesystem.name;
+              var modificationTime = meta.modificationTime;
+              return new ShellEntry(entry.name, entry.fullPath, meta.size, modificationTime, entry.isFile, entry);
+          });
+      };
+      return ShellEntry;
+  }());
+  function getMetaData$1(entity) {
+      return new Promise(function (resolve, reject) {
+          entity.getMetadata(function (metadata) {
+              resolve(metadata);
+          }, function (error) {
+              logFileError(error);
+              reject(error);
+          });
+      });
+  }
+
+  var ls = function (path) {
       // if it's a directory it sould end with a slash
       // https://stackoverflow.com/questions/190852/how-can-i-get-file-extensions-with-javascript/1203361#1203361
       var extension = path.substring(path.lastIndexOf('.') + 1, path.length) || path;
@@ -99,14 +127,22 @@
           window.resolveLocalFileSystemURL(path, function (entry) {
               if (entry.isFile) {
                   logInfo('file found : ' + entry.name);
-                  resolve([entry]);
+                  ShellEntry.fromCordova(entry).then(function (shellEntry) {
+                      resolve([shellEntry]);
+                  });
               }
               else {
                   var dir = entry;
                   var reader = dir.createReader();
                   reader.readEntries(function (entries) {
                       logEntry(entries);
-                      resolve(entries);
+                      var promises = [];
+                      entries.forEach(function (entry) {
+                          promises.push(ShellEntry.fromCordova(entry));
+                      });
+                      Promise.all(promises).then(function (shellEntries) {
+                          resolve(shellEntries);
+                      });
                   }, function (err) {
                       logFileError(err);
                       reject(err);
@@ -139,16 +175,20 @@
           getEntry(parent).then(function (parentDirectory) {
               parentDirectory.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
                   logInfo('directory created.');
-                  resolve(directory);
+                  ShellEntry.fromCordova(directory).then(function (shellEntry) {
+                      resolve(shellEntry);
+                  });
               }, function (err) {
                   logFileError(err);
                   reject(err);
               });
           }, function () {
               return _mkdir(parent).then(function (parentDirectory) {
-                  parentDirectory.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
+                  parentDirectory.nativeEntry.getDirectory(dir, { create: true, exclusive: false }, function (directory) {
                       logInfo('directory created.');
-                      resolve(directory);
+                      ShellEntry.fromCordova(directory).then(function (shellEntry) {
+                          resolve(shellEntry);
+                      });
                   }, function (err) {
                       logFileError(err);
                       reject(err);
@@ -212,7 +252,9 @@
                       var _parent = parentDirectory;
                       entry.copyTo(_parent, newName_1, function (item) {
                           logInfo(entry.name + ' copied.');
-                          resolve(item);
+                          ShellEntry.fromCordova(item).then(function (shellEntry) {
+                              resolve(shellEntry);
+                          });
                       }, function (err) {
                           logFileError(err);
                           reject(err);
@@ -259,11 +301,13 @@
           var directory = extract.directory;
           return new Promise(function (resolve, reject) {
               mkdir(directory).then(function (directoryEntry) {
-                  directoryEntry.getFile(newName, { create: true, exclusive: false }, function (entry) {
+                  directoryEntry.nativeEntry.getFile(newName, { create: true, exclusive: false }, function (entry) {
                       entry.createWriter(function (writer) {
                           writer.onwriteend = function () {
                               logInfo('file downloaded.');
-                              resolve(entry);
+                              ShellEntry.fromCordova(entry).then(function (shellEntry) {
+                                  resolve(shellEntry);
+                              });
                           };
                           writer.onerror = function (e) {
                               reject(e);
@@ -325,7 +369,9 @@
                   var writer = file.createWriter(function (fileWriter) {
                       fileWriter.onwriteend = function () {
                           logInfo('file wrote.');
-                          resolve(file);
+                          ShellEntry.fromCordova(file).then(function (shellEntry) {
+                              resolve(shellEntry);
+                          });
                       };
                       fileWriter.onerror = Promise.reject;
                       fileWriter.write(text);
