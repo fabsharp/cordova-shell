@@ -1,6 +1,6 @@
 'use strict';
 
-console.log("node-shell.js v0.9.9")
+console.log("node-shell.js v0.9.10")
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
