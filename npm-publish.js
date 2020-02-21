@@ -18,7 +18,5 @@ fs.copyFileSync("dist/cordova-shell.js", "dist.npm/cordova-shell.js");
 fs.copyFileSync("dist/cordova-shell.js.map", "dist.npm/cordova-shell.js.map");
 fs.copyFileSync("dist/node-shell.js", "dist.npm/node-shell.js");
 fs.copyFileSync("dist/node-shell.js.map", "dist.npm/node-shell.js.map");
-fs.copyFileSync("dist/index.js", "dist.npm/index.js");
-fs.copyFileSync("dist/index.js.map", "dist.npm/index.js.map");
 fs.copyFileSync("dist/index.d.ts", "dist.npm/index.d.ts");
 console.log('package ready for npmjs.com');
