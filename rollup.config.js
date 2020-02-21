@@ -10,6 +10,7 @@ export default [{
         format: 'umd',
         sourcemap: true,
         name : 'shell',
+        intro : 'console.log("cordova-shell.js v' + pkg.version + '")'
     }],
     plugins: [
         typescript(),
@@ -23,6 +24,7 @@ export default [{
         format: 'commonjs',
         sourcemap: true,
         name : 'shell',
+        intro : 'console.log("node-shell.js v' + pkg.version + '")'
     }],
     plugins: [
         typescript(),
