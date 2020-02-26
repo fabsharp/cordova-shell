@@ -21,7 +21,7 @@ export default [{
     input: 'src/node/index.ts',
     output: [{
         file: 'dist/node-shell.js',
-        format: 'commonjs',
+        format: 'umd',
         sourcemap: true,
         name : 'shell',
         intro : 'console.log("node-shell.js v' + pkg.version + '")'
