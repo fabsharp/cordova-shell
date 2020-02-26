@@ -14,7 +14,7 @@ shell.copy('cdvfile://localhost/persistent/data/hello.txt', cordova.file.dataDir
 
 shell.ls(cordova.file.dataDirectory);
 
-shell.download('https://www.w3.org/TR/PNG/iso_8859-1.txt', 'cdvfile://localhost/persistent/data/iso.txt');
+shell.download('https://www.w3.org/TR/PNG/iso_8859-1.txt', 'cdvfile://localhost/persistent/data/iso.txt', progressCallback);
 
 shell.readText('cdvfile://localhost/persistent/data/iso.txt')
 

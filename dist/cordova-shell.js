@@ -289,40 +289,121 @@
   }
   var copy = _copy;
 
-  var download = function (url, dest) {
-      return fetch(url).then(function (response) {
-          if (response.ok) {
-              return response.blob();
-          }
-          else {
-              return Promise.reject(response);
-          }
-      }).then(function (blob) {
+  var download = function (url, dest, progressCallback) {
+      return new Promise(function (resolve, reject) {
           var extract = extractFileName(dest);
           var newName = extract.file;
           var directory = extract.directory;
-          return new Promise(function (resolve, reject) {
-              mkdir(directory).then(function (directoryEntry) {
-                  directoryEntry.nativeEntry.getFile(newName, { create: true, exclusive: false }, function (entry) {
-                      entry.createWriter(function (writer) {
-                          writer.onwriteend = function () {
-                              logInfo('file downloaded.');
-                              ShellEntry.fromCordova(entry).then(function (shellEntry) {
-                                  resolve(shellEntry);
-                              });
-                          };
-                          writer.onerror = function (e) {
-                              reject(e);
-                          };
-                          writer.write(blob);
-                      });
-                  }, function (error) {
-                      logFileError(error);
-                      reject(error);
+          mkdir(directory).then(function (directoryEntry) {
+              directoryEntry.nativeEntry.getFile(newName, { create: true, exclusive: false }, function (entry) {
+                  launchDownloadStreamXHR(url, entry, progressCallback).then(function (file) {
+                      resolve(file);
+                  }).catch(function (err) {
+                      reject(err);
                   });
-              }, reject);
+              }, function (error) {
+                  logFileError(error);
+                  reject(error);
+              });
+          }, reject);
+      });
+  };
+  var launchDownloadStreamXHR = function (url, entry, progressCallback) {
+      return new Promise(function (resolve, reject) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.responseType = 'blob';
+          xhr.onerror = function (err) {
+              reject(err);
+          };
+          if (typeof progressCallback === 'function') {
+              xhr.onprogress = function (e) {
+                  if (e.lengthComputable) {
+                      progressCallback({
+                          action: 'downloading',
+                          loaded: e.loaded,
+                          total: e.total,
+                          percentDownloading: (e.loaded > 0) ? ((e.loaded / e.total) * 100) : 0,
+                          percent: (e.loaded > 0) ? ((e.loaded / e.total) * 50) : 0,
+                      });
+                  }
+              };
+          }
+          xhr.onload = function () {
+              if (this.status == 200) {
+                  progressCallback({
+                      action: 'downloading',
+                      loaded: this.response.size,
+                      total: this.response.size,
+                      percentDownloading: 100,
+                      percent: 50,
+                  });
+                  var blob = new Blob([this.response], { type: 'application/octet-binary' });
+                  writeFile(entry, blob, progressCallback).then(function (file) {
+                      resolve(file);
+                  }).catch(function (err) {
+                      reject(err);
+                  });
+              }
+          };
+          xhr.send();
+      });
+  };
+  var writeFile = function (entry, data, progressCallback) {
+      return new Promise(function (resolve, reject) {
+          entry.createWriter(function (fileWriter) {
+              fileWriter.onerror = function (err) {
+                  logInfo("Failed file write: " + err.toString());
+                  reject(err);
+              };
+              function writeFinish() {
+                  function success() {
+                      progressCallback({
+                          action: 'writing',
+                          written: data.size,
+                          total: data.size,
+                          percentWriting: 100,
+                          percent: 100,
+                      });
+                      ShellEntry.fromCordova(entry).then(function (shellEntry) {
+                          resolve(shellEntry);
+                      });
+                  }
+                  function fail(error) {
+                      logInfo("Unable to retrieve file properties: " + error.code);
+                      reject(error);
+                  }
+                  entry.file(success, fail);
+              }
+              var written = 0;
+              var BLOCK_SIZE = 1 * 1024 * 1024; // write 1M every time of write
+              function writeNext(cbFinish) {
+                  fileWriter.onwrite = function () {
+                      if (written < data.size) {
+                          writeNext(cbFinish);
+                      }
+                      else {
+                          cbFinish();
+                      }
+                  };
+                  if (written) {
+                      fileWriter.seek(fileWriter.length);
+                  }
+                  if (typeof progressCallback === 'function') {
+                      progressCallback({
+                          action: 'writing',
+                          written: written,
+                          total: data.size,
+                          percentWriting: ((written / data.size) * 100) || 0,
+                          percent: 50 + ((written / data.size) * 50),
+                      });
+                  }
+                  fileWriter.write(data.slice(written, written + Math.min(BLOCK_SIZE, data.size - written)));
+                  written += Math.min(BLOCK_SIZE, data.size - written);
+              }
+              writeNext(writeFinish);
           });
-      }, function (err) { return Promise.reject(err); });
+      });
   };
 
   var exists = function (url) {
@@ -738,7 +819,7 @@
     return !!value && typeof value == 'object';
   }
 
-  var D__src_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
+  var D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
 
   var _fileTree = function (path) {
       var promises = [];
@@ -752,7 +833,7 @@
               }
           });
           return Promise.all(promises).then(function (result) {
-              return D__src_cordovaShell_node_modules_lodash_flattendeep(result);
+              return D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep(result);
           });
       });
   };

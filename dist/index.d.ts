@@ -34,7 +34,7 @@ declare module shell {
    * @param url
    * @param dest
    */
-  const download: (url: string, dest: string) => Promise<ShellEntry>;
+  const download: (url: string, dest: string, progressCallback? : (progress: any) => {}) => Promise<ShellEntry>;
   /**
    * Check if a file or a directory exists
    * @param url
