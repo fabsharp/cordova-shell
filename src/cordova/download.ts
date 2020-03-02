@@ -3,7 +3,7 @@ import {mkdir} from "./mkdir";
 import * as log from "./log/index";
 import {ShellEntry} from "../ShellEntry";
 
-export const download = (url : string, dest : string, progressCallback? : (progress: any) => {}) : Promise<ShellEntry> => {
+export const download = (url : string, dest : string, progressCallback? : (progress: any) => void) : Promise<ShellEntry> => {
   return new Promise((resolve, reject) => {
     let extract = extractFileName(dest);
     let newName = extract.file;
@@ -23,7 +23,7 @@ export const download = (url : string, dest : string, progressCallback? : (progr
   });
 };
 
-const launchDownloadStreamXHR = (url : string, entry : FileEntry, progressCallback? : (progress: any) => {}) :Promise<ShellEntry> => {
+const launchDownloadStreamXHR = (url : string, entry : FileEntry, progressCallback? : (progress: any) => void) :Promise<ShellEntry> => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -65,7 +65,7 @@ const launchDownloadStreamXHR = (url : string, entry : FileEntry, progressCallba
   });
 };
 
-const writeFile = (entry : FileEntry, data : Blob, progressCallback? : (progress: any) => {}) :Promise<ShellEntry> => {
+const writeFile = (entry : FileEntry, data : Blob, progressCallback? : (progress: any) => void) :Promise<ShellEntry> => {
   return new Promise((resolve, reject) => {
     entry.createWriter((fileWriter : FileWriter) => {
       fileWriter.onerror = (err) => {
