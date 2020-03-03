@@ -163,24 +163,70 @@
       });
   }
 
-  var http = require('http');
   var fs$2 = require('fs');
-  var fetch = require('node-fetch');
   var path$1 = require('path');
-  var download = function (url, dest) {
+  var download = function (url, dest, progressCallback) {
       return new Promise(function (resolve, reject) {
-          fetch(url).then(function (res) {
-              // dest could be deep folder
-              var parent = path$1.dirname(dest);
-              mkdir(parent).then(function () {
-                  var writeStream = fs$2.createWriteStream(dest);
-                  res.body.pipe(writeStream);
-                  getEntry(dest).then(function (entry) {
-                      logInfo("file downloaded");
-                      resolve(entry);
-                  }, reject);
-              }, reject);
+          var parent = path$1.dirname(dest);
+          mkdir(parent).then(function () {
+              launchDownloadStreamXHR(url, dest, progressCallback).then(function (file) {
+                  resolve(file);
+              }).catch(function (err) {
+                  reject(err);
+              });
           }, reject);
+      });
+  };
+  var launchDownloadStreamXHR = function (url, dest, progressCallback) {
+      return new Promise(function (resolve, reject) {
+          var xhr = new XMLHttpRequest();
+          var fileStream = fs$2.createWriteStream(dest);
+          xhr.open('GET', url, true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onerror = function (err) {
+              reject(err);
+          };
+          if (typeof progressCallback === 'function') {
+              xhr.onprogress = function (e) {
+                  if (e.lengthComputable) {
+                      progressCallback({
+                          action: 'downloading',
+                          loaded: e.loaded,
+                          total: e.total,
+                          percentDownloading: (e.loaded > 0) ? ((e.loaded / e.total) * 100) : 0,
+                          percent: (e.loaded > 0) ? ((e.loaded / e.total) * 50) : 0,
+                      });
+                  }
+              };
+          }
+          xhr.onload = function () {
+              if (this.status == 200) {
+                  progressCallback({
+                      action: 'downloading',
+                      loaded: this.response.byteLength,
+                      total: this.response.byteLength,
+                      percentDownloading: 100,
+                      percent: 50,
+                  });
+                  fileStream.write(Buffer.from(this.response));
+                  fileStream.end(function () {
+                      getEntry(dest).then(function (entry) {
+                          logInfo("file downloaded");
+                          if (typeof progressCallback === 'function') {
+                              progressCallback({
+                                  action: 'writing',
+                                  written: entry.size,
+                                  total: entry.size,
+                                  percentWriting: 100,
+                                  percent: 100,
+                              });
+                              resolve(entry);
+                          }
+                      }, reject);
+                  });
+              }
+          };
+          xhr.send();
       });
   };
 

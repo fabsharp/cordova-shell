@@ -18,7 +18,7 @@ export default [{
     input: 'src/node/index.ts',
     output: [{
         file: 'node-test/node-shell.js',
-        format: 'commonjs',
+        format: 'umd',
         sourcemap: 'inline',
         name : 'shell',
     }],
