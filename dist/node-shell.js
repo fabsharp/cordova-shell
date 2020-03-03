@@ -4,7 +4,7 @@
   (global = global || self, factory(global.shell = {}));
 }(this, (function (exports) { 'use strict';
 
-  console.log("node-shell.js v0.9.12")
+  console.log("node-shell.js v0.9.13")
 
   var _consoleLog = false;
   var settings = {
