@@ -28,7 +28,7 @@ declare module shell {
    * @param source
    * @param dest
    */
-  const copy: (source: string, dest: string, progressCallback?: (percent: any) => void) => Promise<ShellEntry>;
+  const copy: (source: string, dest: string) => Promise<ShellEntry>;
   /**
    * Download a remote file to a local folder
    * @param url

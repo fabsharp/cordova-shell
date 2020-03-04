@@ -2,7 +2,7 @@ import {ShellEntry} from "../ShellEntry";
 const fs = require('fs-extra')
 import {ls} from "./ls";
 
-export function copy(source : string, dest : string, progressCallback? : (percent) => void) : Promise<ShellEntry> {
+export function copy(source : string, dest : string) : Promise<ShellEntry> {
   return new Promise((resolve, reject) => {
     fs.copy(source, dest, err => {
       if(err) {

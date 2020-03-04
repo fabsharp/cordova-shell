@@ -135,20 +135,47 @@
   var fs = require('fs-extra');
   var remove = function (path) {
       return new Promise(function (resolve, reject) {
-          fs.emptyDir(path, function (err) {
+          fs.lstat(path, function (err, stat) {
               if (err) {
                   reject(err);
               }
               else {
-                  logInfo('removed ' + path);
-                  resolve();
+                  if (stat.isFile()) {
+                      fs.remove(path, function (err) {
+                          if (err) {
+                              reject(err);
+                          }
+                          else {
+                              logInfo('removed ' + path);
+                              resolve();
+                          }
+                      });
+                  }
+                  else {
+                      fs.emptyDir(path, function (err) {
+                          if (err) {
+                              reject(err);
+                          }
+                          else {
+                              fs.rmdir(path, function (err) {
+                                  if (err) {
+                                      reject(err);
+                                  }
+                                  else {
+                                      logInfo('removed ' + path);
+                                      resolve();
+                                  }
+                              });
+                          }
+                      });
+                  }
               }
           });
       });
   };
 
   var fs$1 = require('fs-extra');
-  function copy(source, dest, progressCallback) {
+  function copy(source, dest) {
       return new Promise(function (resolve, reject) {
           fs$1.copy(source, dest, function (err) {
               if (err) {
@@ -647,7 +674,7 @@
     return !!value && typeof value == 'object';
   }
 
-  var D__src_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
+  var D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep = flattenDeep;
 
   var _fileTree = function (path) {
       var promises = [];
@@ -661,7 +688,7 @@
               }
           });
           return Promise.all(promises).then(function (result) {
-              return D__src_cordovaShell_node_modules_lodash_flattendeep(result);
+              return D__xampp_htdocs_mainDev_DEV_TOOLS_cordovaShell_node_modules_lodash_flattendeep(result);
           });
       });
   };
