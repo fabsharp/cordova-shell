@@ -1,6 +1,6 @@
 {
   "name": "cordova-shell",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "description": "Cordova shell  give you an easy access to the device filesystem.",
   "main": "index.js",
   "scripts": {
