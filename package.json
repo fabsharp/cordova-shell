@@ -31,7 +31,6 @@
     "@types/node": "^13.7.1",
     "chai": "^4.2.0",
     "concurrently": "^5.1.0",
-    "mkdirp": "^0.5.1",
     "mocha": "^7.0.1",
     "rollup-plugin-copy": "^3.2.1",
     "rollup-plugin-typescript2": "^0.25.3"

@@ -115,16 +115,21 @@
       }
   };
 
-  var fsPromises$2 = require('fs').promises;
-  var mkdirp = require('mkdirp');
+  var fs = require('fs-extra');
   function mkdir(path) {
       return new Promise(function (resolve, reject) {
           try {
-              mkdirp.sync(path);
-              return getEntry(path).then(function (entry) {
-                  logInfo('directory created.');
-                  resolve(entry);
-              }, reject);
+              fs.ensureDir(path, function (err) {
+                  if (err) {
+                      reject(err);
+                  }
+                  else {
+                      getEntry(path).then(function (entry) {
+                          logInfo('directory created.');
+                          resolve(entry);
+                      }, reject);
+                  }
+              });
           }
           catch (ex) {
               reject(ex);
@@ -132,16 +137,16 @@
       });
   }
 
-  var fs = require('fs-extra');
+  var fs$1 = require('fs-extra');
   var remove = function (path) {
       return new Promise(function (resolve, reject) {
-          fs.lstat(path, function (err, stat) {
+          fs$1.lstat(path, function (err, stat) {
               if (err) {
                   reject(err);
               }
               else {
                   if (stat.isFile()) {
-                      fs.remove(path, function (err) {
+                      fs$1.remove(path, function (err) {
                           if (err) {
                               reject(err);
                           }
@@ -152,12 +157,12 @@
                       });
                   }
                   else {
-                      fs.emptyDir(path, function (err) {
+                      fs$1.emptyDir(path, function (err) {
                           if (err) {
                               reject(err);
                           }
                           else {
-                              fs.rmdir(path, function (err) {
+                              fs$1.rmdir(path, function (err) {
                                   if (err) {
                                       reject(err);
                                   }
@@ -174,10 +179,10 @@
       });
   };
 
-  var fs$1 = require('fs-extra');
+  var fs$2 = require('fs-extra');
   function copy(source, dest) {
       return new Promise(function (resolve, reject) {
-          fs$1.copy(source, dest, function (err) {
+          fs$2.copy(source, dest, function (err) {
               if (err) {
                   reject(err);
               }
@@ -190,7 +195,7 @@
       });
   }
 
-  var fs$2 = require('fs');
+  var fs$3 = require('fs');
   var path$1 = require('path');
   var download = function (url, dest, progressCallback) {
       return new Promise(function (resolve, reject) {
@@ -207,7 +212,7 @@
   var launchDownloadStreamXHR = function (url, dest, progressCallback) {
       return new Promise(function (resolve, reject) {
           var xhr = new XMLHttpRequest();
-          var fileStream = fs$2.createWriteStream(dest);
+          var fileStream = fs$3.createWriteStream(dest);
           xhr.open('GET', url, true);
           xhr.responseType = 'arraybuffer';
           xhr.onerror = function (err) {
@@ -257,11 +262,11 @@
       });
   };
 
-  var fs$3 = require('fs');
+  var fs$4 = require('fs');
   var exists = function (url) {
       return new Promise(function (resolve, reject) {
           try {
-              if (fs$3.existsSync(url)) {
+              if (fs$4.existsSync(url)) {
                   logInfo('file exists.');
                   resolve(true);
               }
@@ -277,18 +282,18 @@
       });
   };
 
-  var fsPromises$3 = require('fs').promises;
+  var fsPromises$2 = require('fs').promises;
   var readText = function (url) {
-      return fsPromises$3.readFile(url, { encoding: "utf-8" }).then(function (text) {
+      return fsPromises$2.readFile(url, { encoding: "utf-8" }).then(function (text) {
           logInfo(text);
           return text;
       }, Promise.reject);
   };
 
-  var fs$4 = require('fs-extra');
+  var fs$5 = require('fs-extra');
   var readJSON = function (url) {
       return new Promise(function (resolve, reject) {
-          fs$4.readJSON(url, function (err, data) {
+          fs$5.readJSON(url, function (err, data) {
               if (err) {
                   console.error(err);
                   reject(err);
@@ -301,10 +306,10 @@
       });
   };
 
-  var fs$5 = require('fs-extra');
+  var fs$6 = require('fs-extra');
   var writeText = function (text, url) {
       return new Promise(function (resolve, reject) {
-          fs$5.outputFile(url, text, function (err) {
+          fs$6.outputFile(url, text, function (err) {
               if (err) {
                   console.error(err);
                   reject(err);
